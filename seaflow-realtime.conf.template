@@ -1,0 +1,37 @@
+# Cruise name
+CRUISE=
+
+# SeaFlow instrument serial number
+SERIAL=
+
+# Location of raw data directory mounted from the SeaFlow instrument
+INSTRUMENTDIR=
+
+# Location of local copy of raw data directory
+RAWDATADIR=/Users/seaflow/seaflow-rawdata
+
+# Filter parameters CSV. There should be entries with a cruise that matches
+# the cruise provided in this file.
+FILTERPARAMSFILE=
+
+# Location of realtime results. Should contain a 'sync' subdirectory with
+# stat.csv and sfl.csv file which will be synced to REMOTEADDR
+RESULTSDIR=/Users/seaflow/seaflow-realtime-results
+
+# Location of Popcycle source directory
+POPCYCLESOURCEDIR=/Users/seaflow/git/popcycle
+
+# Remote server address for results files transfer
+REMOTEADDR=
+
+# Port on remote server used for reverse tunnel
+RPORT=2222
+
+# Port on local server used for reverse tunnel
+LPORT=22
+
+# SSH private key file to use for rsync transfer off-ship
+PRIVATEKEY=
+
+export CRUISE SERIAL INSTRUMENTDIR RAWDATADIR FILTERPARAMSFILE RESULTSDIR POPCYCLESOURCEDIR
+export REMOTEADDR RPORT LPORT PRIVATEKEY

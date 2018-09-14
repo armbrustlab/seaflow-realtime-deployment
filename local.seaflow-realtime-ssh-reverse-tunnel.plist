@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>Label</key>
+		<string>local.seaflow-realtime-ssh-reverse-tunnel</string>
+		<key>ProgramArguments</key>
+		<array>
+			<string>/Users/seaflow/bin/seaflow-realtime-ssh-reverse-tunnel</string>
+			<string>/Users/seaflow/seaflow-realtime.conf</string>
+		</array>
+		<key>KeepAlive</key>
+		<true/>
+		<key>ThrottleInterval</key>
+		<integer>30</integer>
+		<key>UserName</key>
+		<string>seaflow</string>
+		<key>GroupName</key>
+		<string>staff</string>
+		<key>StandardOutPath</key>
+		<string>/Users/seaflow/log/seaflow-realtime-ssh-reverse-tunnel.stdout</string>
+		<key>StandardErrorPath</key>
+		<string>/Users/seaflow/log/seaflow-realtime-ssh-reverse-tunnel.stderr</string>
+		<key>WorkingDirectory</key>
+		<string>/Users/seaflow</string>
+	</dict>
+</plist>

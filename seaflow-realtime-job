@@ -1,0 +1,53 @@
+#!/bin/bash
+# Perform SeaFlow realtime analysis
+
+if [[ "$#" -ne 1 ]]; then
+  echo "$(basename $0) seaflow-realtime.conf"
+  exit 1
+fi
+CONFFILE=$1
+if [[ ! -e "$CONFFILE" ]]; then
+  echo "Config file $CONFFILE does not exist"
+  exit 1
+fi
+
+source "$CONFFILE"
+
+DBFILE="$RESULTSDIR/${CRUISE}.db"
+
+# Try to find seaflowpy executable
+if ! $SEAFLOWPYEXEC version >/dev/null; then
+  echo "Could not find seaflowpy executable at '$SEAFLOWPYEXEC'"
+  exit 1
+fi
+
+# Copy data from SeaFlow instrument to local storage
+echo "Copying data from $INSTRUMENTDIR to $RAWDATADIR"
+/usr/bin/rsync -auv --progress --stats "$INSTRUMENTDIR/" "$RAWDATADIR"
+
+# Create results directory if it doesn't exist
+mkdir -p "${RESULTSDIR}" 2>/dev/null
+if [[ ! -d "${RESULTSDIR}" ]]; then
+  echo "could not create ${RESULTSDIR}"
+  exit 1
+fi
+mkdir -p "${RESULTSDIR}/sync" 2>/dev/null
+if [[ ! -d "${RESULTSDIR}/sync" ]]; then
+  echo "could not create ${RESULTSDIR}/sync"
+  exit 1
+fi
+
+# If the database doesn't exist yet, create it with filter parameters
+if [ ! -e "$DBFILE" ]; then
+  echo "Loading filter parameters from $FILTERPARAMSFILE for cruise $CRUISE into $DBFILE"
+  "$SEAFLOWPYEXEC" filter-params -d "$DBFILE" -i "$FILTERPARAMSFILE" -c "$CRUISE"
+fi
+
+# Find and import all SFL files in RAWDATADIR
+echo "Importing SFL data in $RAWDATADIR"
+/usr/bin/find "$RAWDATADIR" -name '*.sfl' -print0 | /usr/bin/xargs -0 -n 1 -I "{}" "SEAFLOWPYEXEC" sfl db -f -c "$CRUISE" -s "$SERIAL" -i "{}" -d "$DBFILE"
+
+# Filter, gate, produce results files to sync
+echo "Filtering and gating. Reading from $RAWDATADIR, writing to $RESULTSDIR"
+# TODO
+#Rscript "$POPCYCLESOURCEDIR/executable_scripts/cron_job.R"
