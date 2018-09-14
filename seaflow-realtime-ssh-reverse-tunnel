@@ -28,4 +28,4 @@ date
   -o ConnectTimeout=60 \
   -o ExitOnForwardFailure=True \
   -o ServerAliveInterval=60 \
-  -o ServerAliveInterval=3 -T -R"$RPORT":localhost:"$LPORT" "$REMOTEADDR" 2>&1
+  -o ServerAliveInterval=3 -N -T -R"$RPORT":localhost:"$LPORT" "$REMOTEADDR" 2>&1
