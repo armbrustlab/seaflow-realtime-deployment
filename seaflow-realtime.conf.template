@@ -8,7 +8,7 @@ SERIAL=
 INSTRUMENTDIR=
 
 # Location of local copy of raw data directory
-RAWDATADIR=/Users/seaflow/seaflow-rawdata
+RAWDATADIR=/Users/seaflow/seaflow-raw-data
 
 # Filter parameters CSV. There should be entries with a cruise that matches
 # the cruise provided in this file.
@@ -18,8 +18,14 @@ FILTERPARAMSFILE=
 # stat.csv and sfl.csv file which will be synced to REMOTEADDR
 RESULTSDIR=/Users/seaflow/seaflow-realtime-results
 
+# SeaFlow analysis DB file
+DBFILE="$RESULTSDIR/${CRUISE}.db"
+
 # Location of Popcycle source directory
 POPCYCLESOURCEDIR=/Users/seaflow/git/popcycle
+
+# Location of seaflowpy executable
+SEAFLOWPYEXEC=
 
 # Remote server address for results files transfer
 REMOTEADDR=
@@ -33,5 +39,6 @@ LPORT=22
 # SSH private key file to use for rsync transfer off-ship
 PRIVATEKEY=
 
-export CRUISE SERIAL INSTRUMENTDIR RAWDATADIR FILTERPARAMSFILE RESULTSDIR POPCYCLESOURCEDIR
+export CRUISE SERIAL INSTRUMENTDIR RAWDATADIR FILTERPARAMSFILE RESULTSDIR
+export DBFILE POPCYCLESOURCEDIR SEAFLOWPYEXEC
 export REMOTEADDR RPORT LPORT PRIVATEKEY

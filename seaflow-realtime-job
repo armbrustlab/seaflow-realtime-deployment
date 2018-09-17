@@ -13,17 +13,28 @@ fi
 
 source "$CONFFILE"
 
-DBFILE="$RESULTSDIR/${CRUISE}.db"
-
 # Try to find seaflowpy executable
-if ! $SEAFLOWPYEXEC version >/dev/null; then
+if ! "$SEAFLOWPYEXEC" version >/dev/null; then
   echo "Could not find seaflowpy executable at '$SEAFLOWPYEXEC'"
+  exit 1
+fi
+
+# Try to find popcycle source directory
+if [[ ! -d "$POPCYCLESOURCEDIR" ]]; then
+  echo "Could not find popcycle source directory at '$POPCYCLESOURCEDIR'"
   exit 1
 fi
 
 # Copy data from SeaFlow instrument to local storage
 echo "Copying data from $INSTRUMENTDIR to $RAWDATADIR"
-/usr/bin/rsync -auv --progress --stats "$INSTRUMENTDIR/" "$RAWDATADIR"
+#/usr/bin/rsync -auv --progress --stats "$INSTRUMENTDIR/" "$RAWDATADIR"
+# Create raw data directory if it doesn't exist
+mkdir -p "${RAWDATADIR}" 2>/dev/null
+if [[ ! -d "${RAWDATADIR}" ]]; then
+  echo "could not create ${RAWDATADIR}"
+  exit 1
+fi
+Rscript "$POPCYCLESOURCEDIR"/executable_scripts/copy_file.R
 
 # Create results directory if it doesn't exist
 mkdir -p "${RESULTSDIR}" 2>/dev/null
@@ -45,9 +56,9 @@ fi
 
 # Find and import all SFL files in RAWDATADIR
 echo "Importing SFL data in $RAWDATADIR"
-/usr/bin/find "$RAWDATADIR" -name '*.sfl' -print0 | /usr/bin/xargs -0 -n 1 -I "{}" "SEAFLOWPYEXEC" sfl db -f -c "$CRUISE" -s "$SERIAL" -i "{}" -d "$DBFILE"
+/usr/bin/find "$RAWDATADIR" -name '*.sfl' -print0 | /usr/bin/xargs -0 -n 1 -I "{}" "$SEAFLOWPYEXEC" sfl db -f -c "$CRUISE" -s "$SERIAL" -i "{}" -d "$DBFILE"
 
 # Filter, gate, produce results files to sync
 echo "Filtering and gating. Reading from $RAWDATADIR, writing to $RESULTSDIR"
 # TODO
-#Rscript "$POPCYCLESOURCEDIR/executable_scripts/cron_job.R"
+Rscript "$POPCYCLESOURCEDIR/executable_scripts/cron_job.R"
