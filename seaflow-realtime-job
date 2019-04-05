@@ -60,5 +60,4 @@ echo "Importing SFL data in $RAWDATADIR"
 
 # Filter, gate, produce results files to sync
 echo "Filtering and gating. Reading from $RAWDATADIR, writing to $RESULTSDIR"
-# TODO
 Rscript "$POPCYCLESOURCEDIR/executable_scripts/cron_job.R"

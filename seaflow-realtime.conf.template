@@ -4,7 +4,16 @@ CRUISE=
 # SeaFlow instrument serial number
 SERIAL=
 
-# Location of raw data directory mounted from the SeaFlow instrument
+# Windows file share location of SeaFlow instrument shared folder
+# Should be a Unix UNC path with username, i.e. the string to pass to mount.
+WINDOWSSHARE=
+
+# Mount point for the windows share
+MOUNTPOINT=
+
+# Location of raw data directory mounted from the SeaFlow instrument.
+# This should contain day of year directories and will probably be a subdir
+# of MOUNTPOINT. e.g. $MOUNTPOINT/datafiles/evt
 INSTRUMENTDIR=
 
 # Location of local copy of raw data directory
@@ -39,6 +48,6 @@ LPORT=22
 # SSH private key file to use for rsync transfer off-ship
 PRIVATEKEY=
 
-export CRUISE SERIAL INSTRUMENTDIR RAWDATADIR FILTERPARAMSFILE RESULTSDIR
-export DBFILE POPCYCLESOURCEDIR SEAFLOWPYEXEC
+export CRUISE SERIAL WINDOWSSHARE MOUNTPOINT INSTRUMENTDIR RAWDATADIR
+export FILTERPARAMSFILE RESULTSDIR DBFILE POPCYCLESOURCEDIR SEAFLOWPYEXEC
 export REMOTEADDR RPORT LPORT PRIVATEKEY

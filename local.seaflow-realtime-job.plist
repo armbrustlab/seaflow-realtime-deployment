@@ -6,8 +6,8 @@
 		<string>local.seaflow-realtime-job</string>
 		<key>ProgramArguments</key>
 		<array>
-			<string>/Users/seaflow/bin/seaflow-realtime-job</string>
-			<string>/Users/seaflow/seaflow-realtime.conf</string>
+			<string>/Users/seaflow/realtime/bin/seaflow-realtime-job</string>
+			<string>/Users/seaflow/realtime/seaflow-realtime.conf</string>
 		</array>
 		<key>StartInterval</key>
 		<integer>180</integer>
@@ -18,9 +18,9 @@
 		<key>GroupName</key>
 		<string>staff</string>
 		<key>StandardOutPath</key>
-		<string>/Users/seaflow/log/seaflow-realtime-job.stdout</string>
+		<string>/Users/seaflow/realtime/log/seaflow-realtime-job.stdout</string>
 		<key>StandardErrorPath</key>
-		<string>/Users/seaflow/log/seaflow-realtime-job.stderr</string>
+		<string>/Users/seaflow/realtime/log/seaflow-realtime-job.stderr</string>
 		<key>WorkingDirectory</key>
 		<string>/Users/seaflow</string>
 	</dict>

@@ -1,0 +1,24 @@
+#!/bin/bash
+# Mount SeaFlow instrument data directory.
+
+# Load:
+# - UNC path of Windows share, WINDOWSSHARE
+# - local mount point for instrument data, MOUNTPOINT
+if [[ "$#" -ne 1 ]]; then
+  echo "$(basename $0) seaflow-realtime.conf"
+  exit 1
+fi
+CONFFILE=$1
+if [[ ! -e "$CONFFILE" ]]; then
+  echo "Config file $CONFFILE does not exist"
+  exit 1
+fi
+
+source "$CONFFILE"
+
+# By convention expect datafiles directory in mount point directory
+if [[ ! -d "$MOUNTPOINT/datafiles" ]]; then
+  /bin/date
+  echo "Mounting $WINDOWSSHARE at $MOUNTPOINT"
+  /sbin/mount -r -t smbfs "$WINDOWSSHARE" "$MOUNTPOINT"
+fi
