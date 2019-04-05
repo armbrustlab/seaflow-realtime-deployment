@@ -25,16 +25,12 @@ if [[ ! -d "$POPCYCLESOURCEDIR" ]]; then
   exit 1
 fi
 
-# Copy data from SeaFlow instrument to local storage
-echo "Copying data from $INSTRUMENTDIR to $RAWDATADIR"
-#/usr/bin/rsync -auv --progress --stats "$INSTRUMENTDIR/" "$RAWDATADIR"
 # Create raw data directory if it doesn't exist
 mkdir -p "${RAWDATADIR}" 2>/dev/null
 if [[ ! -d "${RAWDATADIR}" ]]; then
   echo "could not create ${RAWDATADIR}"
   exit 1
 fi
-Rscript "$POPCYCLESOURCEDIR"/executable_scripts/copy_file.R
 
 # Create results directory if it doesn't exist
 mkdir -p "${RESULTSDIR}" 2>/dev/null
