@@ -17,7 +17,7 @@ MOUNTPOINT=
 INSTRUMENTDIR=
 
 # Location of local copy of raw data directory
-RAWDATADIR=/Users/seaflow/seaflow-raw-data
+RAWDATADIR=/Users/seaflow/realtime/seaflow-raw-data
 
 # Filter parameters CSV. There should be entries with a cruise that matches
 # the cruise provided in this file.
@@ -25,7 +25,7 @@ FILTERPARAMSFILE=
 
 # Location of realtime results. Should contain a 'sync' subdirectory with
 # stat.csv and sfl.csv file which will be synced to REMOTEADDR
-RESULTSDIR=/Users/seaflow/seaflow-realtime-results
+RESULTSDIR=/Users/seaflow/realtime/seaflow-realtime-results
 
 # SeaFlow analysis DB file
 DBFILE="$RESULTSDIR/${CRUISE}.db"
