@@ -21,4 +21,4 @@ source "$CONFFILE"
 date
 /usr/bin/rsync -auvz -e "/usr/bin/ssh -i \"$PRIVATEKEY\"" \
   --progress --stats --partial \
-  "$RESULTSDIR/sync/"{stats.csv,sfl.csv} "${REMOTEADDR}:sync/" 2>&1
+  "$RESULTSDIR/sync/"*.csv "${REMOTEADDR}:sync/" 2>&1
