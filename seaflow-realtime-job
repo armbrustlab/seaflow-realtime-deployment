@@ -47,12 +47,12 @@ fi
 # If the database doesn't exist yet, create it with filter parameters
 if [ ! -e "$DBFILE" ]; then
   echo "Loading filter parameters from $FILTERPARAMSFILE for cruise $CRUISE into $DBFILE"
-  "$SEAFLOWPYEXEC" filter-params -d "$DBFILE" -i "$FILTERPARAMSFILE" -c "$CRUISE"
+  "$SEAFLOWPYEXEC" db import-filter-params -c "$CRUISE" "$FILTERPARAMSFILE" "$DBFILE"
 fi
 
 # Find and import all SFL files in RAWDATADIR
 echo "Importing SFL data in $RAWDATADIR"
-/usr/bin/find "$RAWDATADIR" -name '*.sfl' -print0 | /usr/bin/xargs -0 -n 1 -I "{}" "$SEAFLOWPYEXEC" sfl db -f -c "$CRUISE" -s "$SERIAL" -i "{}" -d "$DBFILE"
+/usr/bin/find "$RAWDATADIR" -name '*.sfl' -print0 | /usr/bin/xargs -0 -n 1 -I "{}" "$SEAFLOWPYEXEC" db create -f -c "$CRUISE" -s "$SERIAL" "{}" "$DBFILE"
 
 # Filter, gate, produce results files to sync
 echo "Filtering and gating. Reading from $RAWDATADIR, writing to $RESULTSDIR"
