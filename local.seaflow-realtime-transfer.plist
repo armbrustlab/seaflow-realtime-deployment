@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>Label</key>
+		<string>local.seaflow-transfer-job</string>
+		<key>ProgramArguments</key>
+		<array>
+			<string>/Users/seaflow/realtime/bin/seaflow-transfer-wrapper</string>
+			<string>/Users/seaflow/realtime/seaflow-realtime.conf</string>
+		</array>
+		<key>StartInterval</key>
+		<integer>180</integer>
+		<key>ExitTimeOut</key>
+		<integer>150</integer>
+		<key>UserName</key>
+		<string>seaflow</string>
+		<key>GroupName</key>
+		<string>staff</string>
+		<key>StandardOutPath</key>
+		<string>/Users/seaflow/realtime/log/seaflow-transfer.stdout</string>
+		<key>StandardErrorPath</key>
+		<string>/Users/seaflow/realtime/log/seaflow-transfer.stderr</string>
+		<key>WorkingDirectory</key>
+		<string>/Users/seaflow</string>
+	</dict>
+</plist>

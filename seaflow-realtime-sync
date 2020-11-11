@@ -19,6 +19,8 @@ fi
 source "$CONFFILE"
 
 date
+syncdir=sync/${CRUISE}
+/usr/bin/ssh -i "$PRIVATEKEY" "$REMOTEADDR" "[[ ! -d $syncdir ]] && mkdir -p $syncdir"
 /usr/bin/rsync -auvz -e "/usr/bin/ssh -i \"$PRIVATEKEY\"" \
   --progress --stats --partial \
-  "$RESULTSDIR/sync/"*.csv "${REMOTEADDR}:sync/" 2>&1
+  "$RESULTSDIR/sync-to-cloud/"*.csv "${REMOTEADDR}:${syncdir}/" 2>&1

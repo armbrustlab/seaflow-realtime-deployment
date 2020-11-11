@@ -52,8 +52,8 @@ fi
 
 # Find and import all SFL files in RAWDATADIR
 echo "Importing SFL data in $RAWDATADIR"
-/usr/bin/find "$RAWDATADIR" -name '*.sfl' -print0 | /usr/bin/xargs -0 -n 1 -I "{}" "$SEAFLOWPYEXEC" db create -f -c "$CRUISE" -s "$SERIAL" "{}" "$DBFILE"
+/usr/bin/find "$RAWDATADIR" -name '*.sfl' -print0 | /usr/bin/xargs -0 -n 1 -I "{}"  bash -c '"$SEAFLOWPYEXEC" db import-sfl -f -c "$CRUISE" -s "$SERIAL" {} "$DBFILE"'
 
 # Filter, gate, produce results files to sync
 echo "Filtering and gating. Reading from $RAWDATADIR, writing to $RESULTSDIR"
-Rscript "$POPCYCLESOURCEDIR/executable_scripts/cron_job.R"
+/usr/local/bin/Rscript "$POPCYCLESOURCEDIR/executable_scripts/cron_job.R"
