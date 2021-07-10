@@ -1,0 +1,48 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Ensure basic apt packages are installed
+      apt:
+        name:
+          - samba
+          - smbclient
+          - net-tools
+        update_cache: yes
+        cache_valid_time: 1800
+
+    - name: Add user just for samba
+      user:
+        name: reader
+        shell: /bin/bash
+
+    - name: Create share folder
+      file:
+        path: /cruisereplay_data/output
+        owner: vagrant
+        group: vagrant
+        state: directory
+
+    - name: Configure samba user
+      shell: "printf 'reader\nreader\n' | smbpasswd -a -s reader"
+
+    - name: Configure samba share
+      blockinfile:
+        path: /etc/samba/smb.conf
+        block: |
+          [instrument]
+            path = /cruisereplay_data/output
+            valid users = reader
+            read only = yes
+
+    - name: Restart samba
+      systemd:
+        name: smbd
+        state: restarted
+
+    - name: Include cruisereplay role
+      include_role:
+        name: cruisereplay
+
+    - name: Include udpcombadge role
+      include_role:
+        name: udpcombadge

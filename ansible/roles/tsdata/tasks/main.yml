@@ -1,0 +1,15 @@
+---
+# tasks file for tsdata
+
+- name: Import executable_downloader role
+  import_role:
+    name: executable_downloader
+  vars:
+    execdl_name: "{{ tsdata_name }}"
+    execdl_checksum: "{{ tsdata_checksum }}"
+    execdl_version: "{{ tsdata_version }}"
+    execdl_version_success_string: "{{ tsdata_version_success_string }}"
+    execdl_version_cmd: "{{ tsdata_version_cmd }}"
+    execdl_url: "{{ tsdata_url }}"
+    execdl_downloaded_file: "{{ tsdata_downloaded_file }}"
+    execdl_extracted_path: "{{ tsdata_extracted_path }}"

@@ -1,0 +1,27 @@
+- hosts: all
+  become: yes
+
+  pre_tasks:
+    - name: Install samba apt packages
+      apt:
+        state: present
+        name:
+          - cifs-utils
+          - samba
+          - smbclient
+        update_cache: yes
+        cache_valid_time: 1800
+
+    - debug:
+        msg: "//{{ samba_host }}/{{ samba_share_folder }}"
+
+    - name: Mount SeaFlow instrument network shares
+      ansible.posix.mount:
+        src: "//{{ samba_host }}/{{ samba_share_folder }}"
+        path: "{{ samba_mount_point }}"
+        opts: "ro,intr,username={{ samba_user }},password={{ samba_password }}"
+        fstype: cifs
+        state: mounted
+
+  roles:
+    - hashicorp-realtime

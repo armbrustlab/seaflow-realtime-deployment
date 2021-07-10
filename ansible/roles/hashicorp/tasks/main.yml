@@ -1,0 +1,36 @@
+---
+# tasks file to add Hashicorp repository
+
+
+- name: Install prereqs to allow apt to use a repo over HTTPS
+  become: yes
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: yes
+    cache_valid_time: 1800
+
+- name: Add hashicorp Apt signing key
+  become: yes
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    keyring: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+- name: Get Ubuntu codename
+  command: lsb_release -cs
+  register: codename_result
+  check_mode: no
+  changed_when: False
+
+- name: Add Hashicorp package repository
+  become: yes
+  apt_repository:
+    repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ codename_result.stdout }} main"
+    filename: "hashicorp.list"
+    state: present
+    update_cache: yes

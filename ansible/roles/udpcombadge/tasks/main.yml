@@ -1,0 +1,15 @@
+---
+# tasks file for udpcombadge
+
+- name: Import executable_downloader role
+  import_role:
+    name: executable_downloader
+  vars:
+    execdl_name: "{{ udpcombadge_name }}"
+    execdl_checksum: "{{ udpcombadge_checksum }}"
+    execdl_version: "{{ udpcombadge_version }}"
+    execdl_version_success_string: "{{ udpcombadge_version_success_string }}"
+    execdl_version_cmd: "{{ udpcombadge_version_cmd }}"
+    execdl_url: "{{ udpcombadge_url }}"
+    execdl_downloaded_file: "{{ udpcombadge_downloaded_file }}"
+    execdl_extracted_path: "{{ udpcombadge_extracted_path }}"

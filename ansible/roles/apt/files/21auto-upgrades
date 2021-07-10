@@ -1,0 +1,7 @@
+//
+// File managed by Ansible. Don't edit by hand.
+// Overrides /etc/apt.conf.d/20auto-upgrades. See section on overriding
+// configuration defaults in https://github.com/mvo5/unattended-upgrades/blob/master/README.md
+
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "0";

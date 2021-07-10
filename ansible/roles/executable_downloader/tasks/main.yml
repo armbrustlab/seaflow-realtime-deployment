@@ -1,0 +1,118 @@
+---
+# tasks file for rclone
+
+- name: "{{ execdl_name }} : Install apt prerequisites"
+  apt:
+    state: present
+    name: zip
+    update_cache: yes
+    cache_valid_time: 1800
+
+- name: "{{ execdl_name }} : stat executable file"
+  stat:
+    path: "{{ execdl_install_dir }}/{{ execdl_name }}-{{ execdl_version }}/bin/{{ execdl_name }}"
+  register: exec_stat
+
+- debug:
+    msg: "{{ execdl_name }} : executable found, not installing"
+  when: exec_stat.stat.exists
+
+- debug:
+    msg: "{{ execdl_name }} : executable not found, installing"
+  when: exec_stat.stat.exists == False
+
+- name: "{{ execdl_name }} : Install from download"
+  when: exec_stat.stat.exists == False
+  block:
+    - name: "{{ execdl_name }} : Erase any existing download directory"
+      file:
+        path: "{{ execdl_download_dir }}/{{ execdl_name }}-{{ execdl_version }}"
+        state: absent
+
+    - name: "{{ execdl_name }} : Create download directory"
+      file:
+        path: "{{ execdl_download_dir }}/{{ execdl_name }}-{{ execdl_version }}"
+        state: directory
+        mode: 0755
+
+    - name: "{{ execdl_name }} : Download"
+      get_url:
+        url: "{{ execdl_url }}"
+        dest: "{{ execdl_download_dir }}/{{ execdl_name }}-{{ execdl_version }}/{{ execdl_downloaded_file }}"
+        mode: 0644
+        checksum: "{{ execdl_checksum }}"
+      register: dl
+
+    - debug:
+        msg: "{{ dl.dest }}"
+
+    - name: "{{ execdl_name }} : Extract archive"
+      when: dl.dest | splitext | last == '.zip' or dl.dest | splitext | last == '.tar.gz'
+      unarchive:
+        remote_src: yes
+        src: "{{ dl.dest }}"
+        dest: "{{ execdl_download_dir }}/{{ execdl_name }}-{{ execdl_version }}"
+
+    - name: "{{ execdl_name }} : Decompress gzipped file"
+      when: dl.dest | splitext | last == '.gz'
+      shell: "gzip -dc {{ dl.dest }} > {{ dl.dest | splitext | first }}"
+
+    - name: "{{ execdl_name }} : Create install directory"
+      become: yes
+      file:
+        path: "{{ execdl_install_dir }}/{{ execdl_name }}-{{ execdl_version }}/bin/"
+        state: directory
+        mode: 0755
+
+    - name: "{{ execdl_name }} : Install"
+      become: yes
+      when: execdl_extracted_path != ""
+      copy:
+        remote_src: yes
+        src: "{{ execdl_download_dir }}/{{ execdl_name }}-{{ execdl_version }}/{{ execdl_extracted_path }}"
+        dest: "{{ execdl_install_dir }}/{{ execdl_name }}-{{ execdl_version }}/bin/{{ execdl_name }}"
+        mode: 0755
+# END conditional block
+
+- name: "{{ execdl_name }} : Create default symlink for this version"
+  become: yes
+  file:
+    src: "{{ execdl_install_dir }}/{{ execdl_name }}-{{ execdl_version }}/bin/{{ execdl_name }}"
+    dest: "{{ execdl_symlink_dir }}/{{ execdl_name }}"
+    mode: 0755
+    state: link
+
+# - name: "{{ execdl_name }} : Create default symlink for this version"
+#   become: yes
+#   file:
+#     src: "{{ execdl_install_dir }}/{{ execdl_name }}-{{ execdl_version }}/"
+#     dest: "{{ execdl_install_dir }}/{{ execdl_name }}"
+#     mode: 0755
+#     state: link
+
+# - name: "{{ execdl_name }} : Add to PATH"
+#   become: yes
+#   copy:
+#     dest: "/etc/profile.d/{{ execdl_name }}.sh"
+#     content: |
+#       # Expand $PATH to include {{ execdl_name }}.
+#       bin_path="{{ execdl_install_dir }}/{{ execdl_name }}/bin"
+#       export PATH=$PATH:$bin_path
+#     mode: 0644
+
+- name: "{{ execdl_name }} : Confirm executable is available and get version"
+  command: "bash --login -c '{{ execdl_version_cmd }}'"
+  register: version_cmd_result
+  check_mode: no
+  changed_when: False
+
+- debug:
+    msg: "stdout={{ version_cmd_result.stdout }}"
+
+- debug:
+    msg: "stderr={{ version_cmd_result.stderr }}"
+
+- name: "{{ execdl_name }} : Confirm executable is desired version"
+  assert:
+    that:
+      - execdl_version_success_string in version_cmd_result.stdout or execdl_version_success_string in version_cmd_result.stderr

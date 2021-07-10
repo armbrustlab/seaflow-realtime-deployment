@@ -1,0 +1,97 @@
+---
+# tasks file for golang
+
+- name: stat go binary file
+  stat:
+    path: "{{ install_dir }}/go-{{ go_version }}/bin/go"
+  register: go_binary_stat
+
+- debug:
+    msg: go binary found, not installing
+  when: go_binary_stat.stat.exists
+
+- debug:
+    msg: go binary not found, installing
+  when: go_binary_stat.stat.exists == False
+
+- name: Compile and in install go
+  when: go_binary_stat.stat.exists == False
+  block:
+    - name: Check for existing go download directory
+      stat:
+        path: "download_dir }}/go-{{ go_version }}"
+      register: go_dl_stat
+
+    - name: Erase existing go build directory
+      become: yes
+      when: go_dl_stat.stat.exists
+      file:
+        path: "{{ download_dir }}/go-{{ go_version }}"
+        state: absent
+
+    - name: Create go download directory
+      file:
+        path: "{{ download_dir }}/go-{{ go_version }}"
+        state: directory
+
+    - name: Download go 
+      get_url:
+        url: "https://dl.google.com/go/go{{ go_version }}.linux-amd64.tar.gz"
+        dest: "{{ download_dir }}/go-{{ go_version }}/go{{ go_version }}.linux-amd64.tar.gz"
+        mode: 0644
+        checksum: "{{ go_checksum }}"
+    
+    - name: Create a versioned subdir to extract into
+      file:
+        path: "{{ download_dir }}/go-{{ go_version }}/go-{{ go_version }}"
+        mode: 0755
+        state: directory
+
+    - name: Extract go
+      unarchive:
+        remote_src: yes
+        src: "{{ download_dir }}/go-{{ go_version }}/go{{ go_version }}.linux-amd64.tar.gz"
+        dest: "{{ download_dir }}/go-{{ go_version }}/go-{{ go_version }}"
+        extra_opts: --strip-components=1
+
+    - name: Install go
+      become: yes
+      copy:
+        remote_src: yes
+        src: "{{ download_dir }}/go-{{ go_version }}/go-{{ go_version }}"
+        dest: "{{ install_dir }}/"
+# END conditional block
+
+- name: Create default symlink for this version of go
+  become: yes
+  file:
+    src: "{{ install_dir }}/go-{{ go_version }}/"
+    dest: "{{ install_dir }}/go"
+    mode: 0755
+    state: link
+
+- name: Add go to PATH
+  become: yes
+  copy:
+    dest: /etc/profile.d/go.sh
+    content: |
+      # Expand $PATH to include go.
+      go_bin_path="{{ install_dir }}/go/bin"
+      if [ -n "${PATH##*${go_bin_path}}" ] && [ -n "${PATH##*${go_bin_path}:*}" ]; then
+          export PATH=$PATH:${go_bin_path}
+      fi
+    mode: 0644
+
+- name: Confirm go is available and get version
+  command: bash --login -c 'go version'
+  register: go_version_cmd_result
+  check_mode: no
+  changed_when: False
+
+- debug:
+    msg: "stdout={{ go_version_cmd_result.stdout }}"
+
+- name: Confirm go is desired version
+  assert:
+    that:
+      - "'{{ go_version }}' in go_version_cmd_result.stdout"

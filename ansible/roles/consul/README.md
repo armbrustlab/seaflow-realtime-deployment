@@ -1,0 +1,4 @@
+consul
+======
+
+Install consul.

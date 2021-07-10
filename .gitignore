@@ -1,2 +1,9 @@
-*.tar.gz
-seaflow-realtime.conf
+# Don't add a file named secrets[.yml] anywhere in this repo, just to be sure
+secrets
+secrets.yml
+**/.vagrant/
+cruisereplay_data/HOT325-datafiles
+cruisereplay_data/HOT325-underway
+cruisereplay_data/SFlog.txt
+cruisereplay_data/output
+jobs_data/*

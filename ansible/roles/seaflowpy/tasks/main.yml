@@ -1,0 +1,36 @@
+---
+# tasks file for seaflowpy
+
+- include_role:
+    name: docker
+
+- name: "seaflowpy : Pull docker image"
+  community.docker.docker_image:
+    name: "{{ seaflowpy_image }}:{{ seaflowpy_version }}"
+    source: pull
+
+# Image can't be tagged as 'latest' for nomad local docker images so we'll use
+# 'local' instead
+- name: "seaflowpy : Tag image as local"
+  community.docker.docker_image:
+    name: "{{ seaflowpy_image }}:{{ seaflowpy_version }}"
+    repository: "{{ seaflowpy_image }}:local"
+    force_tag: yes
+    source: local
+
+- name: "seaflowpy : Get version"
+  command: "docker run --rm {{ seaflowpy_image }}:local seaflowpy version"
+  register: seaflowpy_version_cmd_result
+  check_mode: no
+  changed_when: False
+
+- debug:
+    msg: "stdout={{ seaflowpy_version_cmd_result.stdout }}"
+
+- debug:
+    msg: "stderr={{ seaflowpy_version_cmd_result.stderr }}"
+
+- name: "seaflowpy : Confirm version is correct"
+  assert:
+    that:
+      - seaflowpy_version in seaflowpy_version_cmd_result.stdout or seaflowpy_version in seaflowpy_version_cmd_result.stderr

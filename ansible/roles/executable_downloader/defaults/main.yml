@@ -1,0 +1,5 @@
+---
+
+execdl_download_dir: "/home/{{ ansible_user }}/ansible_downloads"
+execdl_install_dir: /opt/installs
+execdl_symlink_dir: /usr/local/bin

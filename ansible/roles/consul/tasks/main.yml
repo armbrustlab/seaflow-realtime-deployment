@@ -1,0 +1,68 @@
+---
+# tasks file for consul
+
+- include_role:
+    name: hashicorp
+
+- name: Install consul
+  become: yes
+  apt:
+    name:
+      - consul
+    state: present
+    update_cache: yes
+    cache_valid_time: 1800
+
+- name: Create consul directories
+  become: yes
+  file:
+    path: "{{ item }}"
+    owner: consul
+    group: consul
+    state: directory
+  loop:
+    - "/var/log/consul/"
+    - "/opt/consul/"
+
+- name: Override default config file
+  become: yes
+  copy:
+    src: "consul.hcl"
+    dest: "/etc/consul.d/"
+    backup: yes
+    owner: consul
+    group: consul
+    mode: 0644
+  notify:
+    - Restart consul
+
+- name: Override default systemd service file
+  become: yes
+  copy:
+    src: "consul.service"
+    dest: "/usr/lib/systemd/system/"
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Reload systemd
+    - Restart consul
+
+- name: Start consul
+  become: yes
+  systemd:
+    name: consul
+    state: started
+    enabled: yes
+
+- name: Get consul version
+  command: consul -version
+  register: version_result
+  check_mode: no
+  changed_when: False
+
+- name: Confirm consul can be run
+  assert:
+    that:
+      - "'Consul' in version_result.stdout"

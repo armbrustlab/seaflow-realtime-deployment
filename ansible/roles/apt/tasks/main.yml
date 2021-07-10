@@ -1,0 +1,52 @@
+---
+# tasks file for apt
+
+- name: Override default unattended upgrades config files
+  become: yes
+  copy:
+    src: "{{ item }}"
+    dest: '/etc/apt/apt.conf.d/'
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - '21auto-upgrades'
+    - '51unattended-upgrades'
+
+- name: Ensure basic apt packages are installed
+  become: yes
+  apt:
+    name:
+      # General software
+      - git
+      - build-essential
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+      - zip
+      - parallel
+      - pigz
+      - rsync
+      - screen
+      - vim
+      - wget
+      - smbclient
+      - bmon
+      - htop
+      - iotop
+      - fio
+      - hwloc
+      - lm-sensors
+      - tree
+      - python3-pip
+      - python3-venv
+      - sqlite3
+      - net-tools
+      - jq
+      - cifs-utils
+    state: present
+    update_cache: yes
+    cache_valid_time: 1800

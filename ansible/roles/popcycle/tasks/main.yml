@@ -1,0 +1,28 @@
+---
+# tasks file for popcycle
+
+- include_role:
+    name: docker
+
+- name: "popcycle : Pull docker image"
+  community.docker.docker_image:
+    name: "{{ popcycle_image }}"
+    tag: "{{ popcycle_version }}"
+    source: pull
+
+- name: "popcycle : Get version"
+  command: "docker run --rm {{ popcycle_image }}:{{ popcycle_version }} R --slave -e 'packageVersion(\"popcycle\")'"
+  register: popcycle_version_cmd_result
+  check_mode: no
+  changed_when: False
+
+- debug:
+    msg: "stdout={{ popcycle_version_cmd_result.stdout }}"
+
+- debug:
+    msg: "stderr={{ popcycle_version_cmd_result.stderr }}"
+
+- name: "popcycle : Confirm version is correct"
+  assert:
+    that:
+      - popcycle_version in popcycle_version_cmd_result.stdout or popcycle_version in popcycle_version_cmd_result.stderr

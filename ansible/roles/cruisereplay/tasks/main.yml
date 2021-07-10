@@ -1,0 +1,15 @@
+---
+# tasks file for cruisereplay
+
+- name: Import executable_downloader role
+  import_role:
+    name: executable_downloader
+  vars:
+    execdl_name: "{{ cruisereplay_name }}"
+    execdl_checksum: "{{ cruisereplay_checksum }}"
+    execdl_version: "{{ cruisereplay_version }}"
+    execdl_version_success_string: "{{ cruisereplay_version_success_string }}"
+    execdl_version_cmd: "{{ cruisereplay_version_cmd }}"
+    execdl_url: "{{ cruisereplay_url }}"
+    execdl_downloaded_file: "{{ cruisereplay_downloaded_file }}"
+    execdl_extracted_path: "{{ cruisereplay_extracted_path }}"

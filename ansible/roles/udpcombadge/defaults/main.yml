@@ -1,0 +1,9 @@
+---
+udpcombadge_name: udpcombadge
+udpcombadge_checksum: sha256:34a559025952f6da48a0a6d7b1669a593b809ec61967bed2b14ef0b94ee93d53
+udpcombadge_version: v0.1.0
+udpcombadge_version_success_string: "{{ udpcombadge_version }}"
+udpcombadge_version_cmd: "{{ udpcombadge_name }} version"
+udpcombadge_downloaded_file: "udpcombadge.{{ udpcombadge_version }}.linux-amd64"
+udpcombadge_url: "https://github.com/ctberthiaume/udpcombadge/releases/download/{{ udpcombadge_version }}/{{ udpcombadge_downloaded_file }}"
+udpcombadge_extracted_path: "{{ udpcombadge_downloaded_file }}"

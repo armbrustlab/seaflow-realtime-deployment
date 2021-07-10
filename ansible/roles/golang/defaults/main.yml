@@ -1,0 +1,10 @@
+---
+# defaults file for golang
+
+download_dir: "/home/{{ ansible_user }}/ansible_downloads"
+install_dir: /opt/installs
+
+# version for downloads and installs
+go_version: 1.16.5
+# archive checksum
+go_checksum: "sha256:b12c23023b68de22f74c0524f10b753e7b08b1504cb7e417eccebdd3fae49061"

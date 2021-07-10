@@ -1,0 +1,15 @@
+---
+# tasks file for seaflowtransfer
+
+- name: Import executable_downloader role
+  import_role:
+    name: executable_downloader
+  vars:
+    execdl_name: "{{ seaflowtransfer_name }}"
+    execdl_checksum: "{{ seaflowtransfer_checksum }}"
+    execdl_version: "{{ seaflowtransfer_version }}"
+    execdl_version_success_string: "{{ seaflowtransfer_version_success_string }}"
+    execdl_version_cmd: "{{ seaflowtransfer_version_cmd }}"
+    execdl_url: "{{ seaflowtransfer_url }}"
+    execdl_downloaded_file: "{{ seaflowtransfer_downloaded_file }}"
+    execdl_extracted_path: "{{ seaflowtransfer_extracted_path }}"

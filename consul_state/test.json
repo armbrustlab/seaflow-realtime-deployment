@@ -1,0 +1,79 @@
+[
+  {
+    "key": "cruise/name",
+    "flags": 0,
+    "value": "Intrepid-9"
+  },
+  {
+    "key": "cruise/start",
+    "flags": 0,
+    "value": "2020-12-16T00:00:00Z"
+  },
+  {
+    "key": "cruise/end",
+    "flags": 0,
+    "value": "2020-12-23T00:00:00Z"
+  },
+  {
+    "key": "cruise/onoff",
+    "flags": 0,
+    "value": "off"
+  },
+
+  {
+    "key": "appconfig/cruisemic/interval",
+    "flags": 0,
+    "value": "1s"
+  },
+  {
+    "key": "appconfig/cruisemic/parser",
+    "flags": 0,
+    "value": "Kilo Moana"
+  },
+  {
+    "key": "appconfig/cruisemic/port",
+    "flags": 0,
+    "value": "20000"
+  },
+
+  {
+    "key": "appconfig/subsample/sample-tail-hours",
+    "flags": 0,
+    "value": 2
+  },
+  {
+    "key": "appconfig/subsample/sample-noise-count",
+    "flags": 0,
+    "value": 10000
+  },
+  {
+    "key": "appconfig/subsample/sample-full-count",
+    "flags": 0,
+    "value": 100000
+  },
+  {
+    "key": "appconfig/subsample/bead-sample-min-fsc",
+    "flags": 0,
+    "value": 30000
+  },
+  {
+    "key": "appconfig/subsample/bead-sample-min-pe",
+    "flags": 0,
+    "value": 30000
+  },
+  {
+    "key": "appconfig/subsample/bead-sample-min-chl",
+    "flags": 0,
+    "value": 25000
+  },
+  {
+    "key": "appconfig/subsample/bead-finder-min-fsc",
+    "flags": 0,
+    "value": 40000
+  },
+  {
+    "key": "appconfig/subsample/bead-finder-min-pe",
+    "flags": 0,
+    "value": 45000
+  }
+]

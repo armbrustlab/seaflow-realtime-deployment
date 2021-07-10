@@ -1,0 +1,4 @@
+cruisemic
+=========
+
+Install cruisemic.

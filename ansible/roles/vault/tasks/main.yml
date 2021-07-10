@@ -1,0 +1,25 @@
+---
+# tasks file for vault
+
+- include_role:
+    name: hashicorp
+
+- name: Install vault
+  become: yes
+  apt:
+    name:
+      - vault
+    state: present
+    update_cache: yes
+    cache_valid_time: 1800
+
+- name: Get vault version
+  command: vault -version
+  register: version_result
+  check_mode: no
+  changed_when: False
+
+- name: Confirm vault can be run
+  assert:
+    that:
+      - "'Vault' in version_result.stdout"

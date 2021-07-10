@@ -1,0 +1,68 @@
+---
+# tasks file for nomad
+
+- include_role:
+    name: hashicorp
+
+- name: Install nomad
+  become: yes
+  apt:
+    name:
+      - nomad
+    state: present
+    update_cache: yes
+    cache_valid_time: 1800
+
+- name: Create nomad directories
+  become: yes
+  file:
+    path: "{{ item }}"
+    owner: nomad
+    group: nomad
+    state: directory
+  loop:
+    - "/var/log/nomad/"
+    - "/opt/nomad/data/"
+
+- name: Override default config files
+  become: yes
+  copy:
+    src: "nomad.hcl"
+    dest: "/etc/nomad.d/"
+    backup: yes
+    owner: nomad
+    group: nomad
+    mode: 0644
+  notify:
+    - Restart nomad
+
+- name: Override default systemd service file
+  become: yes
+  copy:
+    src: "nomad.service"
+    dest: "/usr/lib/systemd/system/"
+    backup: yes
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Reload systemd
+    - Restart nomad
+
+- name: Start nomad
+  become: yes
+  systemd:
+    name: nomad
+    state: started
+    enabled: yes
+
+- name: Get nomad version
+  command: nomad -version
+  register: version_result
+  check_mode: no
+  changed_when: False
+
+- name: Confirm nomad can be run
+  assert:
+    that:
+      - "'Nomad' in version_result.stdout"

@@ -1,0 +1,60 @@
+---
+
+argument_specs:
+  main:
+    short_description: Download and install an executable file
+    options:
+      execdl_name:
+        type: "str"
+        required: true
+        description: "Name of the executable file."
+      
+      execdl_checksum:
+        type: "str"
+        required: true
+        description: "Downloaded file checksum."
+      
+      execdl_url:
+        type: "str"
+        required: true
+        description: "Download URL for this version."
+      
+      execdl_downloaded_file:
+        type: "str"
+        required: true
+        description: "A name for the downloaded file with correct extension. e.g. app.tar.gz."
+
+      execdl_version:
+        type: "str"
+        required: true
+        description: "Version for downloads and install locations."
+      
+      execdl_version_cmd:
+        type: "str"
+        required: False
+        description: "Command to get executable version. If not provided no check will be made."
+
+      execdl_version_success_string:
+        type: "str"
+        required: false
+        description: "Version string whose presence will signal success in version_cmd output."
+      
+      execdl_extracted_path:
+        type: "str"
+        required: true
+        description: >
+          Extracted path of executable file. e.g. unzipped_folder/mybinary.
+          If the downloaded file is the executable itself and does not need to be extracted,
+          this value should be the same as execdl_downloaded_file.
+
+      execdl_download_dir:
+        type: "str"
+        required: false
+        default: "/home/{{ ansible_user }}/ansible_downloads"
+        description: "Download staging location"
+
+      execdl_install_dir:
+        type: "str"
+        required: false
+        default: "/opt"
+        description: "Install location"

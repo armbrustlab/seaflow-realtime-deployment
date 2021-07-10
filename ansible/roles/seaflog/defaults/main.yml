@@ -1,0 +1,9 @@
+---
+seaflog_name: seaflog
+seaflog_checksum: sha256:d32bec45565458f0419a6eeb9f8f87d166bf0f650eda76092b03b1374011661f
+seaflog_version: v0.1.4
+seaflog_version_success_string: "{{ seaflog_version }}"
+seaflog_version_cmd: "{{ seaflog_name }} --version"
+seaflog_downloaded_file: "seaflog-{{ seaflog_version }}-linux-amd64"
+seaflog_url: "https://github.com/seaflow-uw/seaflog/releases/download/{{ seaflog_version }}/{{ seaflog_downloaded_file }}"
+seaflog_extracted_path: "{{ seaflog_downloaded_file }}"

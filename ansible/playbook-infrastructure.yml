@@ -1,0 +1,9 @@
+- hosts: sink
+  roles:
+    - apt
+    - docker
+    - consul
+    - vault
+    - nomad
+    - golang
+    - rclone

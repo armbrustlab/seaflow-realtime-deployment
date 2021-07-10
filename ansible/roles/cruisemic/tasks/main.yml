@@ -1,0 +1,15 @@
+---
+# tasks file for cruisemic
+
+- name: Import executable_downloader role
+  import_role:
+    name: executable_downloader
+  vars:
+    execdl_name: "{{ cruisemic_name }}"
+    execdl_checksum: "{{ cruisemic_checksum }}"
+    execdl_version: "{{ cruisemic_version }}"
+    execdl_version_success_string: "{{ cruisemic_version_success_string }}"
+    execdl_version_cmd: "{{ cruisemic_version_cmd }}"
+    execdl_url: "{{ cruisemic_url }}"
+    execdl_downloaded_file: "{{ cruisemic_downloaded_file }}"
+    execdl_extracted_path: "{{ cruisemic_extracted_path }}"

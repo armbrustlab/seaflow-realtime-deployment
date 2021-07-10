@@ -1,0 +1,15 @@
+---
+# tasks file for seaflog
+
+- name: Import executable_downloader role
+  import_role:
+    name: executable_downloader
+  vars:
+    execdl_name: "{{ seaflog_name }}"
+    execdl_checksum: "{{ seaflog_checksum }}"
+    execdl_version: "{{ seaflog_version }}"
+    execdl_version_success_string: "{{ seaflog_version_success_string }}"
+    execdl_version_cmd: "{{ seaflog_version_cmd }}"
+    execdl_url: "{{ seaflog_url }}"
+    execdl_downloaded_file: "{{ seaflog_downloaded_file }}"
+    execdl_extracted_path: "{{ seaflog_extracted_path }}"

@@ -1,0 +1,11 @@
+- hosts: all
+  become: yes
+
+- name: Base provisioning
+  import_playbook: playbook-infrastructure.yml
+
+- name: Tools provisioning
+  import_playbook: playbook-tools.yml
+
+- name: Realtime specific provisioning
+  import_playbook: playbook-realtime.yml

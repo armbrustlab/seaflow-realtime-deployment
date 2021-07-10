@@ -1,0 +1,4 @@
+hashicorp
+=========
+
+Install Hashicorp repository.

@@ -1,0 +1,59 @@
+---
+
+- name: "{{ execdl_name }} : Install apt prerequisites"
+  apt:
+    state: present
+    name: jq
+    update_cache: yes
+    cache_valid_time: 1800
+
+- include_role:
+    name: consul
+
+- include_role:
+    name: nomad
+
+- name: Install nomad host volume configuration
+  become: yes
+  template:
+    src: host_volume.hcl.j2
+    dest: /etc/nomad.d/host_volume.hcl
+    owner: nomad
+    group: nomad
+  notify: Restart nomad
+
+- name: Install nomad jobs
+  become: yes
+  copy:
+    src: jobs
+    dest: /etc/nomad.d/
+    owner: nomad
+    group: nomad
+
+- name: Create consul watches folder
+  become: yes
+  file:
+    path: /etc/consul.d/watches/
+    owner: consul
+    group: consul
+    state: directory
+
+- name: Install consul watches scripts
+  become: yes
+  copy:
+    src: watches/{{ item }}
+    dest: /etc/consul.d/watches/{{ item }}
+    owner: consul
+    group: consul
+    mode: '0755'
+  loop:
+    - cruise-onoff.sh
+
+- name: Install consul watches config
+  become: yes
+  copy:
+    src: watches.hcl
+    dest: /etc/consul.d/
+    owner: consul
+    group: consul
+  notify: Reload consul

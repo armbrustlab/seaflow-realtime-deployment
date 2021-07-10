@@ -1,0 +1,21 @@
+---
+all:
+  children:
+    source:
+      hosts:
+        vagrant_source:
+          ansible_user: vagrant
+          ansible_port: 2222
+          ansible_host: 127.0.0.1
+          ansible_ssh_private_key_file: .vagrant/machines/source/virtualbox/private_key
+          # Only safe because we're working on an ephemeral vagrant VM
+          ansible_ssh_common_args: -o StrictHostKeyChecking=no
+    sink:
+      hosts:
+        vagrant_sink:
+          ansible_user: vagrant
+          ansible_port: 2200
+          ansible_host: 127.0.0.1
+          ansible_ssh_private_key_file: .vagrant/machines/sink/virtualbox/private_key
+          # Only safe because we're working on an ephemeral vagrant VM
+          ansible_ssh_common_args: -o StrictHostKeyChecking=no

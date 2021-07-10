@@ -1,0 +1,9 @@
+client {
+  host_volume "jobs_data" {
+    path = "{{ jobs_data }}"
+  }
+
+  host_volume "seaflow_data" {
+    path = "{{ samba_mount_point }}"
+  }
+}

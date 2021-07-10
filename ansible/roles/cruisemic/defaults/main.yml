@@ -1,0 +1,9 @@
+---
+cruisemic_name: cruisemic
+cruisemic_checksum: sha256:8fd58bc3ce6d02df36e56ad62a33b0d2dc3a5d7913a580486e5a453ff82e1420
+cruisemic_version: v0.2.4
+cruisemic_version_success_string: "{{ cruisemic_version }}"
+cruisemic_version_cmd: "{{ cruisemic_name }} -version"
+cruisemic_downloaded_file: "cruisemic.{{ cruisemic_version }}.linux-amd64"
+cruisemic_url: "https://github.com/ctberthiaume/cruisemic/releases/download/{{ cruisemic_version }}/{{ cruisemic_downloaded_file }}"
+cruisemic_extracted_path: "{{ cruisemic_downloaded_file }}"
