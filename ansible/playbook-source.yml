@@ -18,8 +18,8 @@
     - name: Create share folder
       file:
         path: /cruisereplay_data/output
-        owner: vagrant
-        group: vagrant
+        owner: ubuntu
+        group: ubuntu
         state: directory
 
     - name: Configure samba user

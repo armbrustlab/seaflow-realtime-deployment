@@ -7,3 +7,4 @@ samba_share_folder: instrument
 samba_mount_point: /mnt/seaflow
 samba_user: reader
 samba_password: reader
+realtime_user: vagrant

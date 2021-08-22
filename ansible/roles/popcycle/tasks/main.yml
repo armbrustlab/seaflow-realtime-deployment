@@ -6,12 +6,20 @@
 
 - name: "popcycle : Pull docker image"
   community.docker.docker_image:
-    name: "{{ popcycle_image }}"
-    tag: "{{ popcycle_version }}"
+    name: "{{ popcycle_image }}:{{ popcycle_version }}"
     source: pull
 
+# Image can't be tagged as 'latest' for nomad local docker images so we'll use
+# 'local' instead
+- name: "popcycle : Tag image as local"
+  community.docker.docker_image:
+    name: "{{ popcycle_image }}:{{ popcycle_version }}"
+    repository: "{{ popcycle_image }}:local"
+    force_tag: yes
+    source: local
+
 - name: "popcycle : Get version"
-  command: "docker run --rm {{ popcycle_image }}:{{ popcycle_version }} R --slave -e 'packageVersion(\"popcycle\")'"
+  command: 'docker run --rm {{ popcycle_image }}:{{ popcycle_version }} R --slave -e ''packageVersion("popcycle")'''
   register: popcycle_version_cmd_result
   check_mode: no
   changed_when: False

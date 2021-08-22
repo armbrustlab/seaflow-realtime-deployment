@@ -1,9 +1,9 @@
 ---
 seaflowtransfer_name: seaflow-transfer
-seaflowtransfer_checksum: sha256:65a26f7c6137eeb49040a9e60f146abeb8be0275eb4e1ae77f14357416f8e6d4
-seaflowtransfer_version: v0.3.0
+seaflowtransfer_checksum: sha256:2ed2890188a619d18ded6a90a490de519dc7cd902919debb72fb5f4a1b1ddebd
+seaflowtransfer_version: v0.4.1
 seaflowtransfer_version_success_string: "{{ seaflowtransfer_version }}"
 seaflowtransfer_version_cmd: "{{ seaflowtransfer_name }} --version"
-seaflowtransfer_downloaded_file: "seaflow-transfer.linux-amd64"
+seaflowtransfer_downloaded_file: "seaflow-transfer.{{ seaflowtransfer_version }}.linux-amd64"
 seaflowtransfer_url: "https://github.com/armbrustlab/seaflow-transfer/releases/download/{{ seaflowtransfer_version }}/{{ seaflowtransfer_downloaded_file }}"
 seaflowtransfer_extracted_path: "{{ seaflowtransfer_downloaded_file }}"

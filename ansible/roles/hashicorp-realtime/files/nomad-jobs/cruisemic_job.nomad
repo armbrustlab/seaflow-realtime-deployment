@@ -18,7 +18,7 @@ job "cruisemic_job" {
     task "cruisemic_task" {
       driver = "exec"
 
-      user = "vagrant"
+      user = "ubuntu"
 
       volume_mount {
         volume = "jobs_data"

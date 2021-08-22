@@ -4,11 +4,12 @@ job "subsample_job" {
   type = "batch"
 
   periodic {
-    cron = "0 */2 * * *"  // every 2 hours
+    cron = "0 */2 * * *"  // every 2 hours at 10 past the hour
     prohibit_overlap = true
     time_zone = "UTC"
   }
 
+  # No restart attempts
   reschedule {
     attempts = 0
     unlimited = false
@@ -24,6 +25,8 @@ job "subsample_job" {
 
     task "subsample_task" {
       driver = "docker"
+
+      user = "ubuntu"
 
       volume_mount {
         volume = "jobs_data"

@@ -14,6 +14,7 @@ Vagrant.configure("2") do |config|
     source.vm.hostname = "source"
     source.vm.box = "ubuntu/focal64"
     source.vm.network "private_network", ip: "172.28.128.2"
+    source.vm.network "forwarded_port", id: "ssh", host: 2222, guest: 22
     source.vm.provider "virtualbox" do |v|
       v.memory = 800
       v.cpus = 1
@@ -32,13 +33,15 @@ Vagrant.configure("2") do |config|
     sink.vm.hostname = "sink"
     sink.vm.box = "ubuntu/focal64"
     sink.vm.network "private_network", ip: "172.28.128.3"
+    sink.vm.network "forwarded_port", id: "ssh", host: 2221, guest: 22
     sink.vm.provider "virtualbox" do |v|
-      v.memory = 10000
+      v.memory = 16000
       v.cpus = 2
     end
     sink.vm.synced_folder "./jobs_data", "/jobs_data"
     sink.vm.synced_folder "./consul_state", "/consul_state"
     sink.vm.provision "shell", inline: "echo '172.28.128.2 source source' >>/etc/hosts"
+
     #sink.vm.provision "ansible" do |ansible|
     #  ansible.playbook = "ansible/playbook-sink.yml"
     #end

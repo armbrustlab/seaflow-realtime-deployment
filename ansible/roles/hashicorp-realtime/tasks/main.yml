@@ -22,29 +22,41 @@
     group: nomad
   notify: Restart nomad
 
+- name: Create realtime configuration directory
+  become: yes
+  file:
+    path: /etc/realtime
+    state: directory
+    recurse: yes
+    mode: 0755
+    owner: "{{ realtime_user }}"
+    group: "{{ realtime_user }}"
+
 - name: Install nomad jobs
   become: yes
   copy:
-    src: jobs
-    dest: /etc/nomad.d/
-    owner: nomad
-    group: nomad
+    src: nomad-jobs
+    dest: /etc/realtime
+    owner: "{{ realtime_user }}"
+    group: "{{ realtime_user }}"
 
 - name: Create consul watches folder
   become: yes
   file:
-    path: /etc/consul.d/watches/
-    owner: consul
-    group: consul
+    path: /etc/realtime/consul-watches/
     state: directory
+    recurse: yes
+    owner: "{{ realtime_user }}"
+    group: "{{ realtime_user }}"
+    
 
 - name: Install consul watches scripts
   become: yes
   copy:
     src: watches/{{ item }}
-    dest: /etc/consul.d/watches/{{ item }}
-    owner: consul
-    group: consul
+    dest: /etc/realtime/consul-watches/{{ item }}
+    owner: "{{ realtime_user }}"
+    group: "{{ realtime_user }}"
     mode: '0755'
   loop:
     - cruise-onoff.sh

@@ -4,11 +4,12 @@ job "seaflog_job" {
   type = "batch"
 
   periodic {
-    cron = "*/15 * * * * *"  // every 15 minutes
+    cron = "*/15 * * * *"  // every 15 minutes
     prohibit_overlap = true
     time_zone = "UTC"
   }
 
+  # No restart attempts
   reschedule {
     attempts = 0
     unlimited = false
@@ -25,7 +26,7 @@ job "seaflog_job" {
     task "seaflog_task" {
       driver = "exec"
 
-      user = "vagrant"
+      user = "ubuntu"
 
       volume_mount {
         volume = "jobs_data"

@@ -1,7 +1,7 @@
 ---
 cruisemic_name: cruisemic
-cruisemic_checksum: sha256:8fd58bc3ce6d02df36e56ad62a33b0d2dc3a5d7913a580486e5a453ff82e1420
-cruisemic_version: v0.2.4
+cruisemic_checksum: sha256:005038b4f22b2354cdd2edcb4a6a429541f27c8d0ba3abed8ba7aeb6465824bf
+cruisemic_version: v0.2.7
 cruisemic_version_success_string: "{{ cruisemic_version }}"
 cruisemic_version_cmd: "{{ cruisemic_name }} -version"
 cruisemic_downloaded_file: "cruisemic.{{ cruisemic_version }}.linux-amd64"

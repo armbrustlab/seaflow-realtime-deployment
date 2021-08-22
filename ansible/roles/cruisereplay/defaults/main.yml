@@ -1,7 +1,7 @@
 ---
 cruisereplay_name: cruisereplay
-cruisereplay_checksum: sha256:33cbf2ab05307e1921e08ca0f3dcd2560ee747e629109aa3f689c771db448f70
-cruisereplay_version: v0.2.2
+cruisereplay_checksum: sha256:49018ec397817ee1cdcce1c8457eda52c8971534f57ff0403d948c0c579a4d17
+cruisereplay_version: v0.2.3
 cruisereplay_version_success_string: "{{ cruisereplay_version }}"
 cruisereplay_version_cmd: "{{ cruisereplay_name }} --version"
 cruisereplay_downloaded_file: "cruisereplay-{{ cruisereplay_version }}-linux-amd64"

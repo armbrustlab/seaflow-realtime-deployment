@@ -1,1 +1,2 @@
 jobs_persistent_data: /opt/nomad/jobs_persistent_data
+realtime_user: vagrant

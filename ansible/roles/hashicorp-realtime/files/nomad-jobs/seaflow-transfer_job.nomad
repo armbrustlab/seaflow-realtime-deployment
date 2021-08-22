@@ -4,11 +4,12 @@ job "seaflow-transfer_job" {
   type = "batch"
 
   periodic {
-    cron = "*/15 * * * * *"  // every 15 minutes
+    cron = "*/15 * * * *"  // every 15 minutes
     prohibit_overlap = true
     time_zone = "UTC"
   }
 
+  # No restart attempts
   reschedule {
     attempts = 0
     unlimited = false
@@ -30,7 +31,7 @@ job "seaflow-transfer_job" {
     task "seaflow-transfer_copy_task" {
       driver = "exec"
 
-      user = "vagrant"
+      user = "ubuntu"
 
       volume_mount {
         volume = "seaflow_data"
@@ -46,9 +47,12 @@ job "seaflow-transfer_job" {
         data = <<EOH
 #!/usr/bin/env bash
 # Script for atomic copy of SeaFlow instrument log file
-[[ -d "/jobs_data/seaflow-transfer/{{ key "cruise/name" }}" ]] || mkdir -p "/jobs_data/seaflow-transfer/{{ key "cruise/name" }}"
-cp "/seaflow_data/logs/SFlog.txt" "/jobs_data/seaflow-transfer/{{ key "cruise/name" }}/.SFlog.txt" || exit 1
-mv "/jobs_data/seaflow-transfer/{{ key "cruise/name" }}/.SFlog.txt" "/jobs_data/seaflow-transfer/{{ key "cruise/name" }}/SFlog.txt" || exit 1
+
+OUTDIR="/jobs_data/seaflow-transfer/{{ key "cruise/name" }}"
+
+[[ -d "${OUTDIR}" ]] || mkdir -p "${OUTDIR}"
+cp "/seaflow_data/logs/SFlog.txt" "${OUTDIR}/.SFlog.txt" || exit 1
+mv "${OUTDIR}/.SFlog.txt" "${OUTDIR}/SFlog.txt" || exit 1
         EOH
         destination = "local/cp.sh"
         change_mode = "restart"
@@ -70,7 +74,7 @@ mv "/jobs_data/seaflow-transfer/{{ key "cruise/name" }}/.SFlog.txt" "/jobs_data/
     task "seaflow-transfer_task" {
       driver = "exec"
 
-      user = "vagrant"
+      user = "ubuntu"
 
       volume_mount {
         volume = "seaflow_data"
@@ -86,14 +90,14 @@ mv "/jobs_data/seaflow-transfer/{{ key "cruise/name" }}/.SFlog.txt" "/jobs_data/
         data = <<EOH
 #!/usr/bin/env bash
 
-CRUISE="{{ key "cruise/name" }}"
+OUTDIR="/jobs_data/seaflow-transfer/{{ key "cruise/name" }}/evt"
 START="{{ key "cruise/start" }}"
 
 seaflow-transfer -version
 
 seaflow-transfer \
   -srcRoot /seaflow_data/datafiles/evt \
-  -dstRoot "/jobs_data/seaflow-transfer/${CRUISE}/evt" \
+  -dstRoot "${OUTDIR}" \
   -start "${START}"
         EOH
         destination = "local/run.sh"
