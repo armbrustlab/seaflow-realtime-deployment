@@ -1,5 +1,9 @@
 [
   {
+    "key": "timescaledb/POSTGRES_PASSWORD",
+    "value": "password"
+  },
+  {
     "key": "cruise/name",
     "flags": 0,
     "value": "Intrepid-9"

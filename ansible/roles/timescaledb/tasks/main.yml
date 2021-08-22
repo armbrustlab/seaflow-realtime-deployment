@@ -1,0 +1,37 @@
+---
+# tasks file for timescaledb
+
+- include_role:
+    name: docker
+
+- name: "timescaledb : Pull docker image"
+  community.docker.docker_image:
+    name: "{{ timescaledb_image }}:{{ timescaledb_version }}"
+    source: pull
+
+# Image can't be tagged as 'latest' for nomad local docker images so we'll use
+# 'local' instead
+- name: "timescaledb : Tag image as local"
+  community.docker.docker_image:
+    name: "{{ timescaledb_image }}:{{ timescaledb_version }}"
+    repository: "{{ timescaledb_image }}:local"
+    force_tag: yes
+    source: local
+
+# No simple way to confirm version, comment out for now.
+# - name: "timescaledb : Get version"
+#   command: "docker run --rm {{ timescaledb_image }}:local timescaledb version"
+#   register: timescaledb_version_cmd_result
+#   check_mode: no
+#   changed_when: False
+
+# - debug:
+#     msg: "stdout={{ timescaledb_version_cmd_result.stdout }}"
+
+# - debug:
+#     msg: "stderr={{ timescaledb_version_cmd_result.stderr }}"
+
+# - name: "timescaledb : Confirm version is correct"
+#   assert:
+#     that:
+#       - timescaledb_version in timescaledb_version_cmd_result.stdout or timescaledb_version in timescaledb_version_cmd_result.stderr

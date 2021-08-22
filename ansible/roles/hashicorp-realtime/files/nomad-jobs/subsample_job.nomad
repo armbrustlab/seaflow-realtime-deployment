@@ -26,8 +26,6 @@ job "subsample_job" {
     task "subsample_task" {
       driver = "docker"
 
-      user = "ubuntu"
-
       volume_mount {
         volume = "jobs_data"
         destination = "/jobs_data"

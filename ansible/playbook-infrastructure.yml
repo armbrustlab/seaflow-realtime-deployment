@@ -7,3 +7,5 @@
     - nomad
     - golang
     - rclone
+    - timescaledb
+    - grafana

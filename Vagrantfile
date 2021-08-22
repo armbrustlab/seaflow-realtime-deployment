@@ -34,6 +34,7 @@ Vagrant.configure("2") do |config|
     sink.vm.box = "ubuntu/focal64"
     sink.vm.network "private_network", ip: "172.28.128.3"
     sink.vm.network "forwarded_port", id: "ssh", host: 2221, guest: 22
+    sink.vm.network "forwarded_port", id: "postgres", host: 5432, guest: 5432
     sink.vm.provider "virtualbox" do |v|
       v.memory = 16000
       v.cpus = 2
