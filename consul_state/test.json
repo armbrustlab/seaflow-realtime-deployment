@@ -3,6 +3,12 @@
     "key": "timescaledb/POSTGRES_PASSWORD",
     "value": "password"
   },
+
+  {
+    "key": "grafana/GF_SECURITY_ADMIN_PASSWORD",
+    "value": "password"
+  },
+
   {
     "key": "cruise/name",
     "flags": 0,
