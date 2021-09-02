@@ -1,0 +1,11 @@
+---
+# defaults file for minio client
+
+mc_name: mc
+mc_checksum: sha256:0df81285771e12e16a0c4c2f5e0ebc700e66abb8179013cc740d48b0abad49be
+mc_version: RELEASE.2021-07-27T06-46-19Z
+mc_version_success_string: "{{ mc_version }}"
+mc_version_cmd: mc --version
+mc_url: "https://dl.min.io/client/mc/release/linux-amd64/archive/mc.{{ mc_version }}"
+mc_downloaded_file: "mc.{{ mc_version }}"
+mc_extracted_path: "mc.{{ mc_version }}"

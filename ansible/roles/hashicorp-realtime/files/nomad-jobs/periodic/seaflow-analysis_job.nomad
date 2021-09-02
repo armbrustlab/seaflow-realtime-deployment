@@ -1,3 +1,8 @@
+variable "realtime_user" {
+  type = string
+  default = "ubuntu"
+}
+
 job "seaflow-analysis_job" {
   datacenters = ["dc1"]
 
@@ -9,45 +14,83 @@ job "seaflow-analysis_job" {
     time_zone = "UTC"
   }
 
+  parameterized {
+    meta_required = ["instrument"]
+  }
+
+  # No restart attempts
+  reschedule {
+    attempts = 1
+    unlimited = false
+  }
+
   group "seaflow-analysis_group" {
     count = 1
-
-    # No restart attempts
-    reschedule {
-      attempts = 0
-      unlimited = false
-    }
 
     volume "jobs_data" {
       type = "host"
       source = "jobs_data"
     }
 
-    task "seaflow-analysis-setup-filter_task" {
+    task "setup" {
+      driver = "exec"
+
+      user = var.realtime_user
+
+      config {
+        command = "/local/run.sh"
+      }
+
+      lifecycle {
+        hook = "prestart"
+        sidecar = false
+      }
+
+      resources {
+        memory = 300
+        cpu = 300
+      }
+
+      template {
+        data = <<EOH
+#!/usr/bin/env bash
+
+# Get cruise name
+echo "cruise=$(consul kv get cruise/name)" > ${NOMAD_ALLOC_DIR}/data/vars
+# Get instrument name
+echo "instrument=${NOMAD_META_instrument}" >> ${NOMAD_ALLOC_DIR}/data/vars
+# Get instrument serial
+echo "serial=$(consul kv get seaflowconfig/${NOMAD_META_instrument}/serial)" >> ${NOMAD_ALLOC_DIR}/data/vars
+
+# First extract the base db, which is base64 encoded gzipped content
+# Work backward from this
+# gzip -c base.db | base64 | consul kv put "seaflow-analysis/${instrument}/dbgz" -
+consul kv get "seaflow-analysis/${NOMAD_META_instrument}/dbgz" | \
+  base64 --decode | \
+  gzip -dc > ${NOMAD_ALLOC_DIR}/data/base.db
+        EOH
+        destination = "/local/run.sh"
+        change_mode = "restart"
+        perms = "755"
+      }
+    }
+
+    task "filter" {
       driver = "docker"
+
+      volume_mount {
+        volume = "jobs_data"
+        destination = "/jobs_data"
+      }
 
       config {
         image = "ctberthiaume/seaflowpy:local"
         command = "/local/run.sh"
-        mount {
-          type = "bind"
-          target = "/jobs_data"
-          source = "/jobs_data"
-        }
       }
 
-      // volume_mount {
-      //   volume = "jobs_data"
-      //   destination = "/jobs_data"
-      // }
-
-      template {
-        data = <<EOH
-{{ key "appconfig/seaflow-analysis/dbgz" }}
-        EOH
-        destination = "local/base.db.base64"
-        change_mode = "noop"
-        perms = "644"
+      resources {
+        memory = 5000
+        cpu = 300
       }
 
       template {
@@ -55,87 +98,85 @@ job "seaflow-analysis_job" {
 #!/usr/bin/env bash
 # Perform SeaFlow setup and filtering
 
-CRUISE="{{ key "cruise/name" }}"
-OUTDIR="/jobs_data/seaflow-analysis/${CRUISE}"
-RAWDATADIR="/jobs_data/seaflow-transfer/${CRUISE}/evt"
-SERIAL="{{ key "appconfig/seaflow-analysis/serial" }}"
-DBFILE="${OUTDIR}/${CRUISE}.db"
+set -e
+
+# Get variables defined by setup task
+source ${NOMAD_ALLOC_DIR}/data/vars
 
 echo "seaflowpy version = $(seaflowpy version)"
-echo "user = $(id)"
-echo "ls -alh /jobs_data"
-ls -alh /jobs_data
+
+outdir="/jobs_data/seaflow-analysis/${cruise}/${instrument}"
+rawdatadir="/jobs_data/seaflow-transfer/${cruise}/${instrument}/evt"
+dbfile="${outdir}/${cruise}.db"
+
+echo "cruise=${cruise}"
+echo "instrument=${instrument}"
+echo "outdir=${outdir}"
+echo "rawdatadir=${rawdatadir}"
+echo "serial=${serial}"
+echo "dbfile=${dbfile}"
 
 # Create output directory if it doesn't exist
-if [[ ! -d "${OUTDIR}" ]]; then
-  echo "Creating output directory ${OUTDIR}"
-  mkdir -p "${OUTDIR}" || exit $?
+if [[ ! -d "${outdir}" ]]; then
+  echo "Creating output directory ${outdir}"
+  mkdir -p "${outdir}" || exit $?
 fi
 
 # Create an new empty database if one doesn't exist
-if [ ! -e "$DBFILE" ]; then
-  echo "Creating $DBFILE with cruise=$CRUISE and inst=$SERIAL"
-  seaflowpy db create -c "$CRUISE" -s "$SERIAL" -d "$DBFILE" || exit $?
+if [ ! -e "$dbfile" ]; then
+  echo "Creating $dbfile with cruise=$cruise and inst=$serial"
+  seaflowpy db create -c "$cruise" -s "$serial" -d "$dbfile" || exit $?
 fi
 
 # Overwrite any existing filter and gating params with the base db pulled from
 # consul
-# First extract the base db, which is base64 encoded gzipped content
-echo "Overwriting filter, gating, poly tables in ${DBTABLE} with data from consul"
-# Work backward from this
-# gzip -c base.db | base64 | consul kv put appconfig/seaflow-analysis/dbgz -
-base64 --decode < /local/base.db.base64 | gzip -dc > /local/base.db  # location from other template stanza
-sqlite3 "${DBFILE}" 'drop table filter' || exit $?
-sqlite3 /local/base.db ".dump filter" | sqlite3 "${DBFILE}" || exit $?
-sqlite3 "${DBFILE}" 'drop table gating' || exit $?
-sqlite3 /local/base.db ".dump gating" | sqlite3 "${DBFILE}" || exit $?
-sqlite3 "${DBFILE}" 'drop table poly' || exit $?
-sqlite3 /local/base.db ".dump poly" | sqlite3 "${DBFILE}" || exit $?
+echo "Overwriting filter, gating, poly tables in ${dbfile} with data from consul"
+sqlite3 "${dbfile}" 'drop table filter' || exit $?
+sqlite3 ${NOMAD_ALLOC_DIR}/data/base.db ".dump filter" | sqlite3 "${dbfile}" || exit $?
+sqlite3 "${dbfile}" 'drop table gating' || exit $?
+sqlite3 ${NOMAD_ALLOC_DIR}/data/base.db ".dump gating" | sqlite3 "${dbfile}" || exit $?
+sqlite3 "${dbfile}" 'drop table poly' || exit $?
+sqlite3 ${NOMAD_ALLOC_DIR}/data/base.db ".dump poly" | sqlite3 "${dbfile}" || exit $?
 
-# Find and import all SFL files in RAWDATADIR
-echo "Importing SFL data in $RAWDATADIR"
-echo "Saving cleaned and concatenated SFL file at ${OUTDIR}/${CRUISE}.sfl"
+# Find and import all SFL files in rawdatadir
+echo "Importing SFL data in $rawdatadir"
+echo "Saving cleaned and concatenated SFL file at ${outdir}/${cruise}.sfl"
 # Just going to assume there are no newlines in filenames here (there shouldn't be!)
-seaflowpy sfl print $(/usr/bin/find "$RAWDATADIR" -name '*.sfl' | sort) > "${OUTDIR}/${CRUISE}.concatenated.sfl" || exit $?
-seaflowpy db import-sfl -f "${OUTDIR}/${CRUISE}.concatenated.sfl" "$DBFILE" || exit $?
+seaflowpy sfl print $(/usr/bin/find "$rawdatadir" -name '*.sfl' | sort) > "${outdir}/${cruise}.concatenated.sfl" || exit $?
+seaflowpy db import-sfl -f "${outdir}/${cruise}.concatenated.sfl" "$dbfile" || exit $?
 
 # Filter new files with seaflowpy
-echo "Filtering data in ${RAWDATADIR} and writing to ${OUTDIR}"
-seaflowpy filter local -p 2 --delta -e "$RAWDATADIR" -d "$DBFILE" -o "$OUTDIR/${CRUISE}_opp" || exit $?
+echo "Filtering data in ${rawdatadir} and writing to ${outdir}"
+seaflowpy filter local -p 2 --delta -e "$rawdatadir" -d "$dbfile" -o "$outdir/${cruise}_opp" || exit $?
         EOH
         destination = "/local/run.sh"
         change_mode = "restart"
         perms = "755"
       }
-
-      resources {
-        memory = 2000
-        cpu = 2000
-      }
-
-      lifecycle {
-        hook = "prestart"
-        sidecar = false
-      }
     }
 
-    task "seaflow-analysis-classification_task" {
+    task "classification" {
       driver = "docker"
 
       config {
         image = "ctberthiaume/popcycle:local"
         command = "/local/run.sh"
-        mount {
-          type = "bind"
-          target = "/jobs_data"
-          source = "/jobs_data"
-        }
       }
 
-      // volume_mount {
-      //   volume = "jobs_data"
-      //   destination = "/jobs_data"
-      // }
+      lifecycle {
+        hook = "poststop"
+        sidecar = false
+      }
+
+      volume_mount {
+        volume = "jobs_data"
+        destination = "/jobs_data"
+      }
+
+      resources {
+        memory = 5000
+        cpu = 300
+      }
 
       template {
         data = <<EOH
@@ -214,7 +255,9 @@ opp_list <- popcycle::get.opp.files(db, all.files=FALSE)
 vct_list <- unique(popcycle::get.vct.table(db)$file)
 files_to_gate <- setdiff(opp_list, vct_list)
 dated_msg(paste0("gating ", length(files_to_gate), " files"))
-popcycle::classify.opp.files(db, opp_dir, files_to_gate, vct_dir)
+if (length(files_to_gate) > 0) {
+  popcycle::classify.opp.files(db, opp_dir, files_to_gate, vct_dir)
+}
 
 ##########################
 ### Save Stats and SFL ###
@@ -247,6 +290,8 @@ if (plot_vct_file != "" || plot_gates_file != "") {
   vct <- vct[vct$q50, ]
   vct$file <- vct$file_id
   vct$pop <- vct$pop_q50
+  vct$fsc_small <- log10(vct$fsc_small)
+  vct$chl_small <- log10(vct$chl_small)
 
   if (plot_vct_file != "") {
     dated_msg("creating VCT cytogram")
@@ -280,37 +325,36 @@ dated_msg("Done")
 #!/usr/bin/env bash
 # Perform SeaFlow classification
 
-CRUISE="{{ key "cruise/name" }}"
-OUTDIR="/jobs_data/seaflow-analysis/${CRUISE}"
-DBFILE="${OUTDIR}/${CRUISE}.db"
-OPPDIR="${OUTDIR}/${CRUISE}_opp"
-VCTDIR="${OUTDIR}/${CRUISE}_vct"
-STATSFILE="${OUTDIR}/stat.csv"
-SFLFILE="${OUTDIR}/sfl.popcycle.csv"
-PLOTVCTFILE="${OUTDIR}/vct.cytogram.png"
-PLOTGATESFILE="${OUTDIR}/gate.cytogram.png"
+set -e
+
+# Get variables defined by setup task
+source ${NOMAD_ALLOC_DIR}/data/vars
+
+outdir="/jobs_data/seaflow-analysis/${cruise}/${instrument}"
+dbfile="${outdir}/${cruise}.db"
+oppdir="${outdir}/${cruise}_opp"
+vctdir="${outdir}/${cruise}_vct"
+statsfile="${outdir}/stat.csv"
+sflfile="${outdir}/sfl.popcycle.csv"
+plotvctfile="${outdir}/vct.cytogram.png"
+plotgatesfile="${outdir}/gate.cytogram.png"
 
 Rscript --slave -e 'message(packageVersion("popcycle"))'
 
 # Classify and produce summary image files
-echo "Classifying data in ${OUTDIR}"
+echo "Classifying data in ${outdir}"
 Rscript --slave /local/cron_job.R \
-  --db "${DBFILE}" \
-  --opp-dir "${OPPDIR}" \
-  --vct-dir "${VCTDIR}" \
-  --stats-file "${STATSFILE}" \
-  --sfl-file "${SFLFILE}" \
-  --plot-vct-file "${PLOTVCTFILE}" \
-  --plot-gates-file "${PLOTGATESFILE}"
+  --db "${dbfile}" \
+  --opp-dir "${oppdir}" \
+  --vct-dir "${vctdir}" \
+  --stats-file "${statsfile}" \
+  --sfl-file "${sflfile}" \
+  --plot-vct-file "${plotvctfile}" \
+  --plot-gates-file "${plotgatesfile}"
         EOH
         destination = "/local/run.sh"
         change_mode = "restart"
         perms = "755"
-      }
-
-      resources {
-        memory = 5000
-        cpu = 2000
       }
     }
   }

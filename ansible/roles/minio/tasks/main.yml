@@ -1,0 +1,15 @@
+---
+# tasks file for minio
+
+- name: Import executable_downloader role
+  import_role:
+    name: executable_downloader
+  vars:
+    execdl_name: "{{ minio_name }}"
+    execdl_checksum: "{{ minio_checksum }}"
+    execdl_version: "{{ minio_version }}"
+    execdl_version_success_string: "{{ minio_version_success_string }}"
+    execdl_version_cmd: "{{ minio_version_cmd }}"
+    execdl_url: "{{ minio_url }}"
+    execdl_downloaded_file: "{{ minio_downloaded_file }}"
+    execdl_extracted_path: "{{ minio_extracted_path }}"

@@ -1,0 +1,15 @@
+---
+# tasks file for mc
+
+- name: Import executable_downloader role
+  import_role:
+    name: executable_downloader
+  vars:
+    execdl_name: "{{ mc_name }}"
+    execdl_checksum: "{{ mc_checksum }}"
+    execdl_version: "{{ mc_version }}"
+    execdl_version_success_string: "{{ mc_version_success_string }}"
+    execdl_version_cmd: "{{ mc_version_cmd }}"
+    execdl_url: "{{ mc_url }}"
+    execdl_downloaded_file: "{{ mc_downloaded_file }}"
+    execdl_extracted_path: "{{ mc_extracted_path }}"

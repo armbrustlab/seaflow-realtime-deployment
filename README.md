@@ -34,10 +34,10 @@ ansible-playbook -i ansible/inventories/vagrant.yml  -l sink ansible/playbook-si
 
 # Manually Load consul state
 vagrant ssh sink
-vagrant@sink:~$ jq '[ .[] | .value = (.value | @base64) ]' < consul_state/test.json | consul kv import -
+vagrant@sink:~$ jq '[ .[] | .value = (.value | @base64) ]' < /consul_state/consul-state.json | consul kv import -
 
 # Capture the consul state and convert values to strings
-consul kv export | jq '[ .[] | .value = (.value | @base64d) ]' > consul_state/consul_state.backup.json
+consul kv export | jq '[ .[] | .value = (.value | @base64d) ]' > /consul_state/consul_state.backup.json
 
 # Turn on analysis
 vagrant@sink:~$ consul kv put cruise/onoff on

@@ -4,7 +4,7 @@ job "consul-state_job" {
   type = "batch"
 
   periodic {
-    cron = "*/1 * * * *"  // every 1 minutes
+    cron = "* */1 * * *"  // every 1 hour
     prohibit_overlap = true
     time_zone = "UTC"
   }
@@ -21,11 +21,11 @@ job "consul-state_job" {
     task "consul-state_task" {
       driver = "raw_exec"
 
-      user = "ubuntu"
-
       template {
         data = <<EOH
 #!/usr/bin/env bash
+
+set -e
 
 if [[ -f /etc/realtime/consul-state.json ]]; then
   echo "Importing consul state"

@@ -1,2 +1,4 @@
-jobs_persistent_data: /opt/nomad/jobs_persistent_data
-realtime_user: vagrant
+jobs_data: /var/local/nomad/jobs_data
+local_jobs_data: /var/local/nomad/local_jobs_data
+samba_mount_point: /mnt/seaflow
+realtime_user: ubuntu

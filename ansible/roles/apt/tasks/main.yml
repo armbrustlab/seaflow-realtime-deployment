@@ -19,36 +19,39 @@
   apt:
     name:
       # General software
-      - git
-      - build-essential
       - apt-transport-https
+      - autofs
+      - bmon
+      - build-essential
       - ca-certificates
+      - cifs-utils
       - curl
+      - fio
+      - git
       - gnupg-agent
-      - software-properties-common
-      - zip
+      - htop
+      - hwloc
+      - inotify-tools
+      - iotop
+      - jq
+      - lm-sensors
+      - net-tools
+      - nmap
       - parallel
       - pigz
-      - rsync
-      - screen
-      - vim
-      - wget
-      - smbclient
-      - bmon
-      - nmap
-      - htop
-      - iotop
-      - fio
-      - hwloc
-      - lm-sensors
-      - tree
+      - postgresql-client-12
       - python3-pip
       - python3-venv
+      - rsync
+      - screen
+      - smbclient
+      - software-properties-common
       - sqlite3
-      - net-tools
-      - jq
-      - cifs-utils
-      - postgresql-client-12
+      - sshpass
+      - tree
+      - vim
+      - wget
+      - zip
     state: present
     update_cache: yes
     cache_valid_time: 1800

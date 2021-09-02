@@ -1,4 +1,5 @@
 - hosts: sink
+  become: yes
   roles:
     - apt
     - docker
@@ -9,3 +10,5 @@
     - rclone
     - timescaledb
     - grafana
+    - minio
+    - mc

@@ -1,3 +1,8 @@
+variable "realtime_user" {
+  type = string
+  default = "ubuntu"
+}
+
 job "cruisemic_job" {
   datacenters = ["dc1"]
 
@@ -18,7 +23,7 @@ job "cruisemic_job" {
     task "cruisemic_task" {
       driver = "exec"
 
-      user = "ubuntu"
+      user = var.realtime_user
 
       volume_mount {
         volume = "jobs_data"
@@ -51,9 +56,6 @@ cruisemic \
 
       config {
         command = "/local/run.sh"
-        args = [
-          
-        ]
       }
     }
   }

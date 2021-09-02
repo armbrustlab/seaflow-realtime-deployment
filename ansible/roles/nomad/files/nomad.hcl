@@ -1,4 +1,4 @@
-data_dir = "/opt/nomad/data/"
+data_dir = "/var/local/nomad/data"
 
 bind_addr = "127.0.0.1"
 

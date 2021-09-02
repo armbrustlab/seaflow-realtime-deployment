@@ -1,17 +1,16 @@
 ---
 
-- name: "{{ execdl_name }} : Install apt prerequisites"
-  apt:
-    state: present
-    name: jq
-    update_cache: yes
-    cache_valid_time: 1800
-
-- include_role:
-    name: consul
-
-- include_role:
-    name: nomad
+# These must exist in order for nomad to start
+- name: Create nomad host volume directories
+  become: yes
+  file:
+    path: "{{ item }}"
+    owner: "{{ realtime_user }}"
+    group: "{{ realtime_user }}"
+    state: directory
+  loop:
+    - "{{ jobs_data }}"
+    - "{{ local_jobs_data }}"
 
 - name: Install nomad host volume configuration
   become: yes
@@ -20,6 +19,18 @@
     dest: /etc/nomad.d/host_volume.hcl
     owner: nomad
     group: nomad
+  notify: Restart nomad
+
+# Put in nomad systemd env file and /etc/environment to make sure env is set up
+# for cases where service starts a job and where realtime user starts a job.
+- name: Set system-wide nomad docker user environment variable
+  become: yes
+  lineinfile:
+    path: "{{ item }}"
+    line: "NOMAD_VAR_realtime_user={{ realtime_user }}"
+  loop:
+    - /etc/nomad.d/nomad.env
+    - /etc/environment
   notify: Restart nomad
 
 - name: Create realtime configuration directory
@@ -40,32 +51,10 @@
     owner: "{{ realtime_user }}"
     group: "{{ realtime_user }}"
 
-- name: Create consul watches folder
-  become: yes
-  file:
-    path: /etc/realtime/consul-watches/
-    state: directory
-    recurse: yes
-    owner: "{{ realtime_user }}"
-    group: "{{ realtime_user }}"
-    
-
-- name: Install consul watches scripts
+- name: Install nomad management scripts
   become: yes
   copy:
-    src: watches/{{ item }}
-    dest: /etc/realtime/consul-watches/{{ item }}
+    src: scripts
+    dest: /etc/realtime
     owner: "{{ realtime_user }}"
     group: "{{ realtime_user }}"
-    mode: '0755'
-  loop:
-    - cruise-onoff.sh
-
-- name: Install consul watches config
-  become: yes
-  copy:
-    src: watches.hcl
-    dest: /etc/consul.d/
-    owner: consul
-    group: consul
-  notify: Reload consul

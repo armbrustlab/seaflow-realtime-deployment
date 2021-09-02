@@ -2,6 +2,7 @@
 # tasks file for rclone
 
 - name: "{{ execdl_name }} : Install apt prerequisites"
+  become: yes
   apt:
     state: present
     name: zip

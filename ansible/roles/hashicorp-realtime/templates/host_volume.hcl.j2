@@ -3,7 +3,7 @@ client {
     path = "{{ jobs_data }}"
   }
 
-  host_volume "seaflow_data" {
-    path = "{{ samba_mount_point }}"
+  host_volume "local_jobs_data" {
+    path = "{{ local_jobs_data }}"
   }
 }

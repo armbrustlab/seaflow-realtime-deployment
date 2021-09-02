@@ -1,3 +1,8 @@
+variable "realtime_user" {
+  type = string
+  default = "ubuntu"
+}
+
 job "seaflog_job" {
   datacenters = ["dc1"]
 
@@ -7,6 +12,10 @@ job "seaflog_job" {
     cron = "*/15 * * * *"  // every 15 minutes
     prohibit_overlap = true
     time_zone = "UTC"
+  }
+
+  parameterized {
+    meta_required = ["instrument"]
   }
 
   # No restart attempts
@@ -23,10 +32,10 @@ job "seaflog_job" {
       source = "jobs_data"
     }
 
-    task "seaflog_task" {
+    task "parse" {
       driver = "exec"
 
-      user = "ubuntu"
+      user = var.realtime_user
 
       volume_mount {
         volume = "jobs_data"
@@ -37,20 +46,23 @@ job "seaflog_job" {
         data = <<EOH
 #!/usr/bin/env bash
 
-CRUISE="{{ key "cruise/name" }}"
-START="{{ key "cruise/start" }}"
-END="{{ key "cruise/end" }}"
+set -e
+
+cruise="{{ key "cruise/name" }}"
+start="{{ key "cruise/start" }}"
+end="{{ key "cruise/end" }}"
+instrument="${NOMAD_META_instrument}"
 
 seaflog --version
 
 seaflog \
   --filetype SeaFlowInstrumentLog \
-  --project "${CRUISE}" \
-  --description "SeaFlow Instrument Log data for ${CRUISE} bewteen ${START} and ${END}" \
-  --earliest "${START}" \
+  --project "${cruise}" \
+  --description "SeaFlow Instrument Log data for ${cruise} bewteen ${start} and ${end}" \
+  --earliest "${start}" \
   --latest "${END}" \
-  --logfile "/jobs_data/seaflow-transfer/${CRUISE}/SFlog.txt" \
-  --outfile "/jobs_data/seaflog/${CRUISE}/${CRUISE}.tsdata" \
+  --logfile "/jobs_data/seaflow-transfer/${cruise}/${instrument}/SFlog.txt" \
+  --outfile "/jobs_data/seaflog/${cruise}/${instrument}/${cruise}.tsdata" \
   --quiet
         EOH
         destination = "local/run.sh"

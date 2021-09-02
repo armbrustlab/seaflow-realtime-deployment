@@ -53,7 +53,7 @@ TIMESCALEDB_TELEMETRY=off
 
       resources {
         memory = 2000
-        cpu = 2000
+        cpu = 300
       }
     }
   }

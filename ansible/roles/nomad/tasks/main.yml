@@ -22,7 +22,7 @@
     state: directory
   loop:
     - "/var/log/nomad/"
-    - "/opt/nomad/data/"
+    - "{{ nomad_data }}/data/"
 
 - name: Override default config files
   become: yes
