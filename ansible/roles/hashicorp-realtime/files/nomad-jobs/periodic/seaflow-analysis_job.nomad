@@ -263,21 +263,14 @@ if (length(files_to_gate) > 0) {
 ### Save Stats and SFL ###
 ##########################
 if (stats_file != "") {
-  stat <- popcycle::get.stat.table(db)
-  statcols <- c(
-    'time', 'lat', 'lon', 'temp', 'salinity', 'par',
-    'stream_pressure', 'file_duration', 'event_rate', 'opp_evt_ratio',
-    'pop', 'n_count', 'chl_med', 'pe_med', 'fsc_med',
-    'diam_mid_med', 'Qc_mid_med', 'quantile', 'flag', 'flow_rate'
-  )
-  stat <- stat[stat$quantile == 50, statcols]
-  dated_msg("saving stats file")
-  write.csv(stat, stats_file, row.names=FALSE, quote=FALSE)
+  stat <- popcycle::create_realtime_bio(db, 50)
+  dated_msg("saving stats / bio file")
+  readr::write_csv(stat, stats_file)
 }
 if (sfl_file != "") {
-  sfl <- popcycle::get.sfl.table(db)
-  dated_msg("saving SFL file")
-  write.csv(sfl, sfl_file, row.names=FALSE, quote=FALSE)
+  sfl <- popcycle::create_realtime_meta(db, 50)
+  dated_msg("saving SFL / metadata file")
+  readr::write_csv(sfl, sfl_file)
 }
 
 ######################
